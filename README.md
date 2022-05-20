@@ -1,3 +1,5 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
-test
+# 串口调试助手
+
+## 说明
+
+厦门大学高级编程技术课程大作业 使用Dart实现的跨平台串口调试助手应用。
