@@ -32,6 +32,7 @@ serial_port_tools get dylib {
   return _dylib ??= serial_port_tools(ffi.DynamicLibrary.open(
     resolveDylibPath(
       'serialport',
+      path: 'lib/dll',
       dartDefine: 'serial_port_tools_PATH',
       environmentVariable: 'serial_port_tools_PATH',
     ),
