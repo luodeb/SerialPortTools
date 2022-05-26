@@ -48,7 +48,7 @@ class _COM7State extends State<COM7> {
                   const Text("波特率"),
                   spacerW,
                   DropDownButton(
-                    disabled: !disabled,
+                    disabled: disabled,
                     title: Text("9600"),//TODO 返回选取值
                     items: [
                       MenuFlyoutItem(
@@ -89,7 +89,7 @@ class _COM7State extends State<COM7> {
                   const Text("数字位"),
                   spacerW,
                   DropDownButton(
-                    disabled: !disabled,
+                    disabled: disabled,
                     title: Text("8"),//TODO 返回选取值
                     items: [
                       MenuFlyoutItem(
@@ -114,7 +114,7 @@ class _COM7State extends State<COM7> {
                   const Text("校验位"),
                   spacerW,
                   DropDownButton(
-                    disabled: !disabled,
+                    disabled: disabled,
                     title: Text("8"),//TODO 返回选取值
                     items: [
                       MenuFlyoutItem(
@@ -139,7 +139,7 @@ class _COM7State extends State<COM7> {
                   const Text("奇偶位"),
                   spacerW,
                   DropDownButton(
-                    disabled: !disabled,
+                    disabled: disabled,
                     title: Text("8"),//TODO 返回选取值
                     items: [
                       MenuFlyoutItem(
@@ -163,13 +163,13 @@ class _COM7State extends State<COM7> {
                   spacerWL,
                   RadioButton(
                     checked: valueOfHEXBtn,
-                    onChanged: !disabled ? null : (v) => setState(() => valueOfHEXBtn = v),
+                    onChanged: disabled ? null : (v) => setState(() => valueOfHEXBtn = v),
                     content: Text("HEX"),
                   ),
                   spacerWL,
                   RadioButton(
                     checked: valueOfTextBtn,
-                    onChanged: !disabled ? null : (v) => setState(() => valueOfTextBtn = v),
+                    onChanged: disabled ? null : (v) => setState(() => valueOfTextBtn = v),
                     content: Text("Text"),
                   ),
                 ],
