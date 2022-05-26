@@ -56,8 +56,26 @@
 /// to suit the needs of the developers and may change between releases.
 library serial_port_tools;
 
+import 'src/port.dart';
+// import 'socket/serverSocket.dart' as serverSocket;
+import 'socket/serverSocket.dart';
+
 export 'src/config.dart' show SerialPortConfig;
 export 'src/enums.dart';
 export 'src/error.dart';
 export 'src/port.dart' show SerialPort;
 export 'src/reader.dart' show SerialPortReader;
+
+// void socketFork() async {
+//   startServer();
+// }
+
+// void comFork() async {}
+
+void serverMain() {
+  startServer();
+  // socketFork();
+  // comFork();
+  // GlobalSerialPort.port = SerialPort("COM10");
+  // print(GlobalSerialPort.port.config.baudRate);
+}

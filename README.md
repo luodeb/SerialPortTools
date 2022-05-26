@@ -59,12 +59,13 @@
 ``` json
 // 扫描串口
 {
-    "function":"scan",
-    "type":{
+    "func":"scan",
+    "comNum":2,
+    "com":{
         "comName":"COM10",
         "comMess":"ELTIMA Virtual Serial Port",
     },
-    "type":{
+    "com":{
         "comName":"COM11",
         "comMess":"ELTIMA Virtual Serial Port",
     },
@@ -72,8 +73,9 @@
 
 // 连接串口COM10
 {
-    "function":"connect",
-    "type":{
+    "func":"connect",
+    "status":"true",
+    "com":{
         "comName":"COM10",
         "comBind":115200,
     },
@@ -81,11 +83,103 @@
 
 // 向串口10发送数据1415926
 {
-    "function":"send",
+    "func":"send",
     "type":{
         "comName":"COM10",
         "comBind":115200,
     },
     "data":"1415926",
+}
+```
+
+## 需求（前端部分）
+
+test
+
+## 前端通讯协议解析
+
+### 读取串口列表
+前端发送:
+``` json
+{
+    "func":"scan"
+}
+```
+后端返回：
+``` json 
+{
+    "func":"scan",
+    "comNum":2,
+    "com":{
+        "comName":"COM10",
+        "comMess":"虚拟串口COM10->COM11",
+    },
+    "com":{
+        "comName":"COM11",
+        "comMess":"虚拟串口COM10->COM11",
+    },
+}
+
+### 打开串口COM10 
+前端发送:
+``` json
+{
+    "func":"connect",
+    "com":{
+        "comName":"COM10",
+        "comBind":115200,
+    }
+}
+```
+后端返回：
+ - 成功：
+``` json 
+{
+    "func":"connect",
+    "type":"true",
+    "com":{
+        "comName":"COM10",
+        "comBind":115200,
+    }
+}
+```
+ - 失败：
+``` json 
+{
+    "func":"connect",
+    "type":"false",
+    "com":{
+        "comName":"COM10",
+        "comBind":115200,
+    }
+}
+```
+同理，关闭串口COM10，将上面的`connect`改为`disconnect`，关闭成功同样返回true
+
+### 发送数据到串口COM10
+
+前端发送:
+``` json
+{
+    "func":"send",
+    "com":{
+        "comName":"COM10",
+        "comBind":115200,
+    },
+    "data":"666666"
+}
+```
+
+### 从串口接收数据
+
+后端发送：
+``` json
+{
+    "func":"send",
+    "com":{
+        "comName":"COM10",
+        "comBind":115200,
+    },
+    "data":"666666"
 }
 ```
