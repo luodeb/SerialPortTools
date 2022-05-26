@@ -1,0 +1,28 @@
+^D:\SOFTWAREDEVELOPMENT\DEVPROJECT\FLUTTER\DEMO\SERIAL_PORTS_DEBUGGING_TOOLS_CLIENT\BUILD\WINDOWS\CMAKEFILES\A1C6BEE420BDC81E6860E1E12A274987\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+D:\SoftwareDevelopment\DevPlatform\VisualStudio\VisualStudio2215\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E env FLUTTER_ROOT=D:\SoftwareDevelopment\DevPlatform\IDEA\Flutter\SDK\flutter PROJECT_DIR=D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client FLUTTER_ROOT=D:\SoftwareDevelopment\DevPlatform\IDEA\Flutter\SDK\flutter FLUTTER_EPHEMERAL_DIR=D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client\windows\flutter\ephemeral PROJECT_DIR=D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client FLUTTER_TARGET=D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client\lib\main.dart DART_DEFINES=Zmx1dHRlci5pbnNwZWN0b3Iuc3RydWN0dXJlZEVycm9ycz10cnVl,RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ== DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client\.dart_tool\package_config.json D:/SoftwareDevelopment/DevPlatform/IDEA/Flutter/SDK/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\SOFTWAREDEVELOPMENT\DEVPROJECT\FLUTTER\DEMO\SERIAL_PORTS_DEBUGGING_TOOLS_CLIENT\BUILD\WINDOWS\CMAKEFILES\766F4CF9DFED59ED9514F88A8542D4D9\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\SOFTWAREDEVELOPMENT\DEVPROJECT\FLUTTER\DEMO\SERIAL_PORTS_DEBUGGING_TOOLS_CLIENT\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+D:\SoftwareDevelopment\DevPlatform\VisualStudio\VisualStudio2215\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -SD:/SoftwareDevelopment/DevProject/Flutter/Demo/serial_ports_debugging_tools_client/windows -BD:/SoftwareDevelopment/DevProject/Flutter/Demo/serial_ports_debugging_tools_client/build/windows --check-stamp-file D:/SoftwareDevelopment/DevProject/Flutter/Demo/serial_ports_debugging_tools_client/build/windows/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

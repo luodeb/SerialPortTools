@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client\windows\flutter\ephemeral\.plugin_symlinks\window_manager\windows\window_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client\windows\flutter\ephemeral\.plugin_symlinks\window_manager\windows\window_manager_plugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\SoftwareDevelopment\DevProject\Flutter\Demo\serial_ports_debugging_tools_client\windows\flutter\ephemeral\.plugin_symlinks\window_manager\windows\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{71CEA515-025C-35DD-B7C0-6B5712F65BE3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
