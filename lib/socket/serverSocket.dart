@@ -131,11 +131,16 @@ void doCommand(Socket clientsocket, jsonData) {
         clientsocket
             .write('{"func":"connect","comName":"${comName}","status":"true"}');
         final reader = SerialPortReader(GlobalSerialPort.port);
-        reader.stream.listen((data) { //监听
-          final String str = String.fromCharCodes(data);
-          clientsocket
-              .write('{"func":"send","comName":"${comName}","data":"${str}"}');
-          print('received: $str');
+        reader.stream.listen((data) {
+          //监听
+          try {
+            final String str = String.fromCharCodes(data);
+            clientsocket.write(
+                '{"func":"send","comName":"${comName}","data":"${str}"}');
+            print('received: $str');
+          } catch (e) {
+            print("error: $data");
+          }
         });
       }
       break;
