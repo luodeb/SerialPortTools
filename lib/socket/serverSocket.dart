@@ -108,35 +108,35 @@ void doCommand(Socket clientsocket, jsonData) {
         for (final name in SerialPort.availablePorts) {
           comNum += 1;
           final sp = SerialPort(name);
-          var comJson = '"com":{';
+          var comJson = '{';
           comJson += '"comName":"${name}",';
           comJson += '"comMess":"${sp.description}"},';
           // print('\tDescription: ${sp.description}');
           comJsonTotal += comJson;
           sp.dispose();
         }
-        clientsocket
-            .write('{"func":"scan","comNum":${comNum},${comJsonTotal}}');
+        clientsocket.write(
+            '{"func":"scan","comNum":${comNum},"com":[${comJsonTotal}]}');
       }
       break;
     case "CONNECT":
       {
-        var comName = jsonData["comName"].toString();
+        var comName = jsonData["com"]["comName"].toString();
         GlobalSerialPort.port = SerialPort(comName);
         if (!GlobalSerialPort.port.openReadWrite()) {
           print(SerialPort.lastError);
           clientsocket.write(
-              '{"func":"connect","comName":"${comName}","status":"false"}');
+              '{"func":"connect","status":"false","com":{"comName":"${comName}"}}');
         }
-        clientsocket
-            .write('{"func":"connect","comName":"${comName}","status":"true"}');
+        clientsocket.write(
+            '{"func":"connect","status":"true","com":{"comName":"${comName}"}}');
         final reader = SerialPortReader(GlobalSerialPort.port);
         reader.stream.listen((data) {
           //监听
           try {
             final String str = String.fromCharCodes(data);
             clientsocket.write(
-                '{"func":"send","comName":"${comName}","data":"${str}"}');
+                '{"func":"send","com":{"comName":"${comName}"},"data":"${str}"}');
             print('received: $str');
           } catch (e) {
             print("error: $data");
@@ -154,7 +154,9 @@ void doCommand(Socket clientsocket, jsonData) {
       break;
     case "DISCONNECT":
       {
+        var comName = jsonData["com"]["comName"].toString();
         GlobalSerialPort.port.dispose();
+        clientsocket.write('{"func":"connect","status":"true","com":{"comName":"${comName}"}}');
       }
       break;
     default:

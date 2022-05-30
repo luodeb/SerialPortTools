@@ -110,14 +110,13 @@ test
 {
     "func":"scan",
     "comNum":2,
-    "com":{
+    "com":[{
         "comName":"COM10",
         "comMess":"虚拟串口COM10->COM11",
-    },
-    "com":{
+    },{
         "comName":"COM11",
         "comMess":"虚拟串口COM10->COM11",
-    },
+    },]
 }
 
 ### 打开串口COM10 
