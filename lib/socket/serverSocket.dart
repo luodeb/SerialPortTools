@@ -53,15 +53,22 @@ String doParseResultJson(Socket socket, String sData, String s) {
   //处理完成，则对剩余部分递归解析，直到全部解析完成（此项一般用不到，仅适用于一次发两个以上的JSON串才需要，
   //每次只传一个JSON串的情况下，是不需要的）
   int idxStart = tmpData.indexOf("{");
+  int temp_index = idxStart+1;
   int idxEnd = 0;
   while (tmpData.contains("}", idxEnd)) {
     idxEnd = tmpData.indexOf("}", idxEnd) + 1;
-    log(socket, '{}=>' + idxStart.toString() + "--" + idxEnd.toString());
+    
     if (idxStart >= idxEnd) {
       continue; // 找下一个 "}"
     }
-
+    
     var sJSON = tmpData.substring(idxStart, idxEnd);
+    if(sJSON.contains("{",temp_index))//子字符串中仍包含{，则继续检索
+    {
+      temp_index = sJSON.indexOf("{",temp_index)+1;
+       continue;
+    }
+    log(socket, '{}=>' + idxStart.toString() + "--" + idxEnd.toString());
     log(socket, "解析 JSON ...." + sJSON);
     try {
       var jsondata = jsonDecode(sJSON); //解析成功，则说明结束，否则抛出异常，继续接收
