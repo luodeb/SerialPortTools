@@ -13,10 +13,9 @@ void startServer() {
     serverSocket.listen((socket) {
       //第一个监听监听套接字是否连接，第二个监听监听数据？
       var tmpData = "";
-      print("成功连接套接字"); //旧版用这行 2021-12-31 更新
-      //socket.transform(utf8.decoder).listen((s) {
+      print("成功连接套接字"); 
 
-      //新版用这行 2021-12-31 更新
+  
       socket.cast<List<int>>().transform(utf8.decoder).listen((s) {
         tmpData = doParseResultJson(socket, tmpData, s);
       });
@@ -32,6 +31,7 @@ void startServer() {
  * s：为当前收到的数据
  * 返回结果为未处理的所有数据。
  */
+//接收串口数据超过一个字节会出错
 String doParseResultJson(Socket socket, String sData, String s) {
   var tmpData = sData + s;
 
@@ -108,35 +108,43 @@ void doCommand(Socket clientsocket, jsonData) {
         for (final name in SerialPort.availablePorts) {
           comNum += 1;
           final sp = SerialPort(name);
-          var comJson = '{';
+          var comJson = '"com":{';
           comJson += '"comName":"${name}",';
           comJson += '"comMess":"${sp.description}"},';
           // print('\tDescription: ${sp.description}');
           comJsonTotal += comJson;
           sp.dispose();
         }
-        clientsocket.write(
-            '{"func":"scan","comNum":${comNum},"com":[${comJsonTotal}]}');
+        clientsocket
+            .write('{"func":"scan","comNum":${comNum},${comJsonTotal}}');
       }
       break;
     case "CONNECT":
       {
-        var comName = jsonData["com"]["comName"].toString();
-        GlobalSerialPort.port = SerialPort(comName);
+          var comName = jsonData["com"]["name"].toString();
+           GlobalSerialPort.port = SerialPort(comName);
+          var Baudrate = jsonData["com"]["baud"].toString();
+          GlobalSerialPort.port.config.baudRate =int.parse(Baudrate); 
+          var stop_Bit = jsonData["com"]["stopBit"].toString();
+          GlobalSerialPort.port.config.stopBits = int.parse(stop_Bit);
+          var Parity = jsonData["com"]["parity"].toString();
+          GlobalSerialPort.port.config.parity = int.parse(Parity);        
         if (!GlobalSerialPort.port.openReadWrite()) {
           print(SerialPort.lastError);
           clientsocket.write(
-              '{"func":"connect","status":"false","com":{"comName":"${comName}"}}');
+              '{"func":"connect","comName":"${comName}","status":"false"}');
         }
-        clientsocket.write(
-            '{"func":"connect","status":"true","com":{"comName":"${comName}"}}');
+       // GlobalSerialPort.port.config.baudRate = 115200;
+        clientsocket
+            .write('{"func":"connect","comName":"${comName}","status":"true"}');
         final reader = SerialPortReader(GlobalSerialPort.port);
+         
         reader.stream.listen((data) {
           //监听
           try {
             final String str = String.fromCharCodes(data);
             clientsocket.write(
-                '{"func":"send","com":{"comName":"${comName}"},"data":"${str}"}');
+                '{"func":"send","comName":"${comName}","data":"${str}"}');
             print('received: $str');
           } catch (e) {
             print("error: $data");
@@ -154,9 +162,7 @@ void doCommand(Socket clientsocket, jsonData) {
       break;
     case "DISCONNECT":
       {
-        var comName = jsonData["com"]["comName"].toString();
         GlobalSerialPort.port.dispose();
-        clientsocket.write('{"func":"connect","status":"true","com":{"comName":"${comName}"}}');
       }
       break;
     default:
