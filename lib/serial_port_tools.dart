@@ -73,7 +73,7 @@ export 'src/reader.dart' show SerialPortReader;
 // void comFork() async {}
 
 void serverMain() {
-  startServer();
+ startServer('127.0.0.1',4041);
   // socketFork();
   // comFork();
   // GlobalSerialPort.port = SerialPort("COM10");
