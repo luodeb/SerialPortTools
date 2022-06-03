@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -7,8 +8,8 @@ class GlobalSerialPort {
   static late SerialPort port;
 }
 
-void startServer() {
-  ServerSocket.bind('127.0.0.1', 4041) //绑定端口4041，根据需要自行修改，建议用动态，防止端口占用
+void startServer(String ip,int socketPort) {
+  ServerSocket.bind(ip, socketPort) //绑定端口4041，根据需要自行修改，建议用动态，防止端口占用
       .then((serverSocket) {
     serverSocket.listen((socket) {
       //第一个监听监听套接字是否连接，第二个监听监听数据？
@@ -22,7 +23,7 @@ void startServer() {
     });
   });
 
-  print(DateTime.now().toString() + " Socket服务启动,正在监听端口 4041...");
+  print(DateTime.now().toString() + " Socket服务启动,正在监听端口"+socketPort.toString()+"....");
 }
 
 /**
@@ -34,7 +35,7 @@ void startServer() {
 //接收串口数据超过一个字节会出错
 String doParseResultJson(Socket socket, String sData, String s) {
   var tmpData = sData + s;
-
+  
   //log(socket, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
   log(socket, s);
   log(socket, "-----------------------------------------");
@@ -63,7 +64,7 @@ String doParseResultJson(Socket socket, String sData, String s) {
     }
     
     var sJSON = tmpData.substring(idxStart, idxEnd);
-    if(sJSON.contains("{",temp_index))//子字符串中仍包含{，则继续检索
+    if(sJSON.contains("{",temp_index))//子字符串中仍包含{，则继续检索，解决连续两个{}报错的情况
     {
       temp_index = sJSON.indexOf("{",temp_index)+1;
        continue;
@@ -90,6 +91,8 @@ String doParseResultJson(Socket socket, String sData, String s) {
           "解析 JSON 出错:" +
               err.toString() +
               ' waiting for next "}"....'); //抛出异常，继续接收，等下一个}
+             tmpData = " ";//解析出错，需清空缓存区数据，若不清除则后续的JASON指令接收会出错，解析的数据一直是粘包的状态
+
     }
   }
   return tmpData;
@@ -136,19 +139,21 @@ void doCommand(Socket clientsocket, jsonData) {
           GlobalSerialPort.port.config.stopBits = int.parse(stop_Bit);
           var Parity = jsonData["com"]["parity"].toString();
           GlobalSerialPort.port.config.parity = int.parse(Parity);        
-        if (!GlobalSerialPort.port.openReadWrite()) {
+          if (!GlobalSerialPort.port.openReadWrite()) {
           print(SerialPort.lastError);
           clientsocket.write(
               '{"func":"connect","comName":"${comName}","status":"false"}');
-        }
+          }
        // GlobalSerialPort.port.config.baudRate = 115200;
         clientsocket
             .write('{"func":"connect","comName":"${comName}","status":"true"}');
         final reader = SerialPortReader(GlobalSerialPort.port);
-         
-        reader.stream.listen((data) {
-          //监听
+        
+       reader.stream.listen((data) {
+        
+    
           try {
+          
             final String str = String.fromCharCodes(data);
             clientsocket.write(
                 '{"func":"send","comName":"${comName}","data":"${str}"}');
@@ -157,6 +162,7 @@ void doCommand(Socket clientsocket, jsonData) {
             print("error: $data");
           }
         });
+       
       }
       break;
     case "SEND":
