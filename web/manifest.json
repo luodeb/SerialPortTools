@@ -1,6 +1,6 @@
 {
-    "name": "serial_ports_debugging_tools_client",
-    "short_name": "serial_ports_debugging_tools_client",
+    "name": "serial_port_tools",
+    "short_name": "serial_port_tools",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

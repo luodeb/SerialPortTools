@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.serial_ports_debugging_tools_client">
+    package="com.example.serial_port_tools">
    <application
-        android:label="serial_ports_debugging_tools_client"
+        android:label="serial_port_tools"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
