@@ -28,11 +28,11 @@
 
 名称：class serialPort 
 功能：
- - .comName 端口号
- - .comBind 波特率
+ - .name 端口号
+ - .baud 波特率
  - ...其他参数待定
  - .send(data) 向串口发送uint8List数据
- - .connect(comName) 连接串口
+ - .connect(name) 连接串口
  - .disconnect() 断开当前串口
  - .check() return portList 返回串口列表
  - .recive() return data 接收uint8List数据
@@ -62,12 +62,12 @@
     "func":"scan",
     "comNum":2,
     "com":{
-        "comName":"COM10",
-        "comMess":"ELTIMA Virtual Serial Port",
+        "name":"COM10",
+        "mess":"ELTIMA Virtual Serial Port",
     },
     "com":{
-        "comName":"COM11",
-        "comMess":"ELTIMA Virtual Serial Port",
+        "name":"COM11",
+        "mess":"ELTIMA Virtual Serial Port",
     },
 }
 
@@ -76,8 +76,8 @@
     "func":"connect",
     "status":"true",
     "com":{
-        "comName":"COM10",
-        "comBind":115200,
+        "name":"COM10",
+        "baud":115200,
     },
 }
 
@@ -85,8 +85,8 @@
 {
     "func":"send",
     "type":{
-        "comName":"COM10",
-        "comBind":115200,
+        "name":"COM10",
+        "baud":115200,
     },
     "data":"1415926",
 }
@@ -111,13 +111,14 @@ test
     "func":"scan",
     "comNum":2,
     "com":[{
-        "comName":"COM10",
-        "comMess":"虚拟串口COM10->COM11",
+        "name":"COM10",
+        "mess":"虚拟串口COM10->COM11",
     },{
-        "comName":"COM11",
-        "comMess":"虚拟串口COM10->COM11",
+        "name":"COM11",
+        "mess":"虚拟串口COM10->COM11",
     },]
 }
+```
 
 ### 打开串口COM10 
 前端发送:
@@ -125,8 +126,8 @@ test
 {
     "func":"connect",
     "com":{
-        "comName":"COM10",
-        "comBind":115200,
+        "name":"COM10",
+        "baud":115200,
     }
 }
 ```
@@ -137,8 +138,8 @@ test
     "func":"connect",
     "type":"true",
     "com":{
-        "comName":"COM10",
-        "comBind":115200,
+        "name":"COM10",
+        "baud":115200,
     }
 }
 ```
@@ -148,8 +149,8 @@ test
     "func":"connect",
     "type":"false",
     "com":{
-        "comName":"COM10",
-        "comBind":115200,
+        "name":"COM10",
+        "baud":115200,
     }
 }
 ```
@@ -162,8 +163,8 @@ test
 {
     "func":"send",
     "com":{
-        "comName":"COM10",
-        "comBind":115200,
+        "name":"COM10",
+        "baud":115200,
     },
     "data":"666666"
 }
@@ -176,8 +177,8 @@ test
 {
     "func":"send",
     "com":{
-        "comName":"COM10",
-        "comBind":115200,
+        "name":"COM10",
+        "baud":115200,
     },
     "data":"666666"
 }

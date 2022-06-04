@@ -13,13 +13,14 @@ class SerialPortData {
   int parity;
   int check;
 
-   static List<SerialPortData> serialPortList = <SerialPortData>[
-    SerialPortData(
-      name:"COM1",
-      baud: 115200,
-      stopBit: 8,
-      parity: 0,
-      check: 0,
-    ),
-   ];
+  static SerialPortData serialPortData = SerialPortData(
+    name: "COM1",
+    baud: 115200,
+    stopBit: 8,
+    parity: 0,
+    check: 0,
+  );
+
+  static List<int> baudList  = [300,1200,2400,9600,19200,38400,115200];
 }
+

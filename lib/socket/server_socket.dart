@@ -33,10 +33,10 @@ String doParseResultJson(Socket socket, String sData, String s) {
   var tmpData = sData + s;
 
   //log(socket, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-  log(socket, s);
-  log(socket, "-----------------------------------------");
-  log(socket, tmpData);
-  log(socket, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  // log(socket, s);
+  // log(socket, "-----------------------------------------");
+  // log(socket, tmpData);
+  // log(socket, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
   // 找这个串里有没有相应的JSON符号
   // 没有的话，将数据返回等下一个包
   var bHasJSON = tmpData.contains("{") && tmpData.contains("}");
@@ -66,8 +66,8 @@ String doParseResultJson(Socket socket, String sData, String s) {
       continue;
     }
     // ignore: prefer_interpolation_to_compose_strings
-    log(socket, '{}=>' + idxStart.toString() + "--" + idxEnd.toString());
-    log(socket, "解析 JSON ....$sJSON");
+    // log(socket, '{}=>' + idxStart.toString() + "--" + idxEnd.toString());
+    // log(socket, "解析 JSON ....$sJSON");
     try {
       var jsondata = jsonDecode(sJSON); //解析成功，则说明结束，否则抛出异常，继续接收
       log(socket, "解析 JSON OK :$jsondata");
@@ -115,19 +115,19 @@ void doCommand(Socket clientsocket, jsonData) {
           comNum += 1;
           final sp = SerialPort(name);
           var comJson = '{';
-          comJson += '"comName":"$name",';
-          comJson += '"comMess":"${sp.description}"},';
+          comJson += '"name":"$name",';
+          comJson += '"mess":"${sp.description}"},';
           // print('\tDescription: ${sp.description}');
           comJsonTotal += comJson;
           sp.dispose();
         }
-        clientsocket.write('{"func":"scan","comNum":$comNum,$comJsonTotal}');
+        clientsocket.write('{"func":"scan","comNum":$comNum,"com":[$comJsonTotal]}');
       }
       break;
     case "CONNECT":
       {
-        var comName = jsonData["com"]["name"].toString();
-        myport = SerialPort(comName);
+        var name = jsonData["com"]["name"].toString();
+        myport = SerialPort(name);
         var baudRate = jsonData["com"]["baud"]??"115200";
         myport.config.baudRate = int.parse(baudRate.toString());
         var stopBit = jsonData["com"]["stopBit"]??"1";
@@ -137,19 +137,18 @@ void doCommand(Socket clientsocket, jsonData) {
         if (!myport.openReadWrite()) {
           print(SerialPort.lastError);
           clientsocket.write(
-              '{"func":"connect","comName":"$comName","status":"false"}');
+              '{"func":"connect","name":"$name","status":"false"}');
         }
-        // myport.config.baudRate = 115200;
         clientsocket
-            .write('{"func":"connect","comName":"$comName","status":"true"}');
+            .write('{"func":"connect","name":"$name","status":"true"}');
         final reader = SerialPortReader(myport);
 
         reader.stream.listen((data) {
           try {
             final String str = String.fromCharCodes(data);
             clientsocket
-                .write('{"func":"send","comName":"$comName","data":"$str"}');
-            print('received: $str');
+                .write('{"func":"send","name":"$name","data":"$str"}');
+            print('port received: $str');
           } catch (e) {
             print("error: $data");
           }
@@ -158,7 +157,7 @@ void doCommand(Socket clientsocket, jsonData) {
       break;
     case "SEND":
       {
-        // var comName = jsonData["comName"].toString();
+        // var name = jsonData["name"].toString();
         var comData = jsonData["data"].toString();
         print(comData);
         myport.write(Uint8List.fromList(comData.codeUnits));

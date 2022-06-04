@@ -15,6 +15,7 @@ import 'pages/COM_6.dart';
 import 'pages/COM_7.dart';
 import 'pages/COM_8.dart';
 import 'pages/COM_9.dart';
+import 'pages/comPage.dart';
 import 'pages/settings.dart';
 import 'socket/client_socket.dart';
 import 'theme.dart';
@@ -263,6 +264,10 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
               source: Text('9'),
             ),
             */
+          ),          
+          PaneItem(
+            icon: const Icon(FluentIcons.devices3),
+            title: const Text('自定义'),
           ),
         ],
         footerItems: [
@@ -283,6 +288,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         const COM7(),
         const COM8(),
         const COM9(),
+        const COMPage(10), // COM10
         Settings(controller: settingsController),
       ]),
     );
