@@ -109,16 +109,18 @@ void doCommand(Socket clientsocket, jsonData) {
       {
         var comJsonTotal = '';
         var comNum = 0;
+        
         for (final name in SerialPort.availablePorts) {
           comNum += 1;
           final sp = SerialPort(name);
-          var comJson = '"com":{';
+          var comJson = '{';
           comJson += '"comName":"$name",';
           comJson += '"comMess":"${sp.description}"},';
           // print('\tDescription: ${sp.description}');
           comJsonTotal += comJson;
           sp.dispose();
         }
+        comJsonTotal = 'com:[$comJsonTotal]';
         clientsocket
             .write('{"func":"scan","comNum":$comNum,$comJsonTotal}');
       }
@@ -127,12 +129,12 @@ void doCommand(Socket clientsocket, jsonData) {
       {
         var comName = jsonData["com"]["name"].toString();
         myport = SerialPort(comName);
-        // var baudRate = jsonData["com"]["baud"]??115200;
-        // myport.config.baudRate = int.parse(baudRate);
-        // var stopBit = jsonData["com"]["stopBit"]??8;
-        // myport.config.stopBits = int.parse(stopBit);
-        // var parity = jsonData["com"]["parity"].toString();
-        // myport.config.parity = int.parse(parity);
+        var baudRate = jsonData["com"]["baud"]??"115200";
+        myport.config.baudRate = int.parse(baudRate.toString());
+        var stopBit = jsonData["com"]["stopBit"]??"1";
+        myport.config.stopBits = int.parse(stopBit.toString());
+        var parity = jsonData["com"]["parity"]??"0";
+        myport.config.parity = int.parse(parity.toString());
         if (!myport.openReadWrite()) {
           print(SerialPort.lastError);
           clientsocket.write(
