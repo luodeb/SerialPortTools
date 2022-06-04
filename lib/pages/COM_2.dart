@@ -114,6 +114,7 @@ class _COM2State extends State<COM2> {
             child: Card(
               child: Wrap(
                 //alignment: WrapAlignment.start,//TODO 根据窗口大小选择排序方式
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   spacerW,
                   const Text("波特率"),
