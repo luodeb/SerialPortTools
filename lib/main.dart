@@ -6,16 +6,16 @@ import 'package:system_theme/system_theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'package:serial_ports_debugging_tools_client/pages/COM_1.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_2.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_3.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_4.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_5.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_6.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_7.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_8.dart';
-import 'package:serial_ports_debugging_tools_client/pages/COM_9.dart';
-import 'package:serial_ports_debugging_tools_client/pages/settings.dart';
+import 'pages/COM_1.dart';
+import 'pages/COM_2.dart';
+import 'pages/COM_3.dart';
+import 'pages/COM_4.dart';
+import 'pages/COM_5.dart';
+import 'pages/COM_6.dart';
+import 'pages/COM_7.dart';
+import 'pages/COM_8.dart';
+import 'pages/COM_9.dart';
+import 'pages/settings.dart';
 import 'theme.dart';
 
 import 'socket/server_socket.dart';
