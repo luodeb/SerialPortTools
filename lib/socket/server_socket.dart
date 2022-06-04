@@ -127,12 +127,12 @@ void doCommand(Socket clientsocket, jsonData) {
       {
         var comName = jsonData["com"]["name"].toString();
         myport = SerialPort(comName);
-        var baudRate = jsonData["com"]["baud"].toString();
-        myport.config.baudRate = int.parse(baudRate);
-        var stopBit = jsonData["com"]["stopBit"].toString();
-        myport.config.stopBits = int.parse(stopBit);
-        var parity = jsonData["com"]["parity"].toString();
-        myport.config.parity = int.parse(parity);
+        // var baudRate = jsonData["com"]["baud"]??115200;
+        // myport.config.baudRate = int.parse(baudRate);
+        // var stopBit = jsonData["com"]["stopBit"]??8;
+        // myport.config.stopBits = int.parse(stopBit);
+        // var parity = jsonData["com"]["parity"].toString();
+        // myport.config.parity = int.parse(parity);
         if (!myport.openReadWrite()) {
           print(SerialPort.lastError);
           clientsocket.write(
