@@ -18,6 +18,8 @@ import 'package:serial_ports_debugging_tools_client/pages/COM_9.dart';
 import 'package:serial_ports_debugging_tools_client/pages/settings.dart';
 import 'theme.dart';
 
+import 'socket/server_socket.dart';
+
 const String appTitle = '  串口调试助手  ';
 
 /// Checks if the current environment is a desktop environment.
@@ -59,7 +61,12 @@ void main() async {
     });
   }
 
+ if (isDesktop) {//只有在桌面端程序才会启动服务端
+    socketBind('127.0.0.1', 4041);
+ }
+
   runApp(const MyApp());
+  // asyncServerSocket("127.0.0.1",9099);
 }
 
 class MyApp extends StatelessWidget {
@@ -98,7 +105,7 @@ class MyApp extends StatelessWidget {
               child: NavigationPaneTheme(
                 data: NavigationPaneThemeData(
                   backgroundColor: appTheme.windowEffect !=
-                      flutter_acrylic.WindowEffect.disabled
+                          flutter_acrylic.WindowEffect.disabled
                       ? Colors.transparent
                       : null,
                 ),
@@ -152,16 +159,19 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
           return const DragToMoveArea(
             child: Align(
               alignment: AlignmentDirectional.centerStart,
-              child: Text(appTitle,textScaleFactor: 1.5,),
+              child: Text(
+                appTitle,
+                textScaleFactor: 1.5,
+              ),
             ),
           );
         }(),
         actions: kIsWeb
             ? null
             : Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [Spacer(), WindowButtons()],
-        ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [Spacer(), WindowButtons()],
+              ),
       ),
       pane: NavigationPane(
         selected: index,
@@ -276,8 +286,8 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
 
   @override
   void onWindowClose() async {
-    bool _isPreventClose = await windowManager.isPreventClose();
-    if (_isPreventClose) {
+    bool isPreventClose = await windowManager.isPreventClose();
+    if (isPreventClose) {
       showDialog(
         context: context,
         builder: (_) {
@@ -323,4 +333,3 @@ class WindowButtons extends StatelessWidget {
     );
   }
 }
-
