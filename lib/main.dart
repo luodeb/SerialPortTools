@@ -16,6 +16,7 @@ import 'pages/COM_7.dart';
 import 'pages/COM_8.dart';
 import 'pages/COM_9.dart';
 import 'pages/settings.dart';
+import 'socket/client_socket.dart';
 import 'theme.dart';
 
 import 'socket/server_socket.dart';
@@ -61,9 +62,12 @@ void main() async {
     });
   }
 
- if (isDesktop) {//只有在桌面端程序才会启动服务端
+  if (isDesktop) {
+    //只有在桌面端程序才会启动服务端
     socketBind('127.0.0.1', 4041);
- }
+  }
+
+  myclient.connect('127.0.0.1', 4041);
 
   runApp(const MyApp());
   // asyncServerSocket("127.0.0.1",9099);
