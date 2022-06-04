@@ -20,7 +20,7 @@
 打开串口调试助手，打开COM11
 ![README-2022-05-25-17-27-01](https://imgfiles-debin.oss-cn-hangzhou.aliyuncs.com/md_imgfiles/README-2022-05-25-17-27-01.png)
 
-然后在项目的根目录运行```dart run```就可以了。
+然后在项目的根目录运行```flutter run```,选择windows就可以了。
 
 ## 需求（后端部分）
 

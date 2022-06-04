@@ -9,7 +9,6 @@ late ServerSocket mysocket;
 late SerialPort myport;
 bool isContinueSendSteam = false; //是否可以发送Steam
 
-
 Future<void> socketBind(String ip, int port) async {
   print('Socket绑定IP $ip : $port');
   mysocket = await ServerSocket.bind(ip, port);
@@ -20,7 +19,7 @@ Future<void> socketBind(String ip, int port) async {
     socket.cast<List<int>>().transform(utf8.decoder).listen((s) {
       tmpData = doParseResultJson(socket, tmpData, s);
       print(s);
-      socket.write("test");
+      // socket.write("test");
     });
   });
 }
@@ -96,10 +95,12 @@ String doParseResultJson(Socket socket, String sData, String s) {
   return tmpData;
 }
 
-
 void log(Socket socket, logdata) {
   // ignore: prefer_interpolation_to_compose_strings
-  print("${DateTime.now()}[${socket.remoteAddress.address}:${socket.remotePort}]" + logdata);
+  print(
+      // ignore: prefer_interpolation_to_compose_strings
+      "${DateTime.now()}[${socket.remoteAddress.address}:${socket.remotePort}]" +
+          logdata);
 }
 
 void doCommand(Socket clientsocket, jsonData) {
@@ -120,9 +121,7 @@ void doCommand(Socket clientsocket, jsonData) {
           comJsonTotal += comJson;
           sp.dispose();
         }
-        comJsonTotal = 'com:[$comJsonTotal]';
-        clientsocket
-            .write('{"func":"scan","comNum":$comNum,$comJsonTotal}');
+        clientsocket.write('{"func":"scan","comNum":$comNum,$comJsonTotal}');
       }
       break;
     case "CONNECT":
@@ -148,8 +147,8 @@ void doCommand(Socket clientsocket, jsonData) {
         reader.stream.listen((data) {
           try {
             final String str = String.fromCharCodes(data);
-            clientsocket.write(
-                '{"func":"send","comName":"$comName","data":"$str"}');
+            clientsocket
+                .write('{"func":"send","comName":"$comName","data":"$str"}');
             print('received: $str');
           } catch (e) {
             print("error: $data");
@@ -174,5 +173,3 @@ void doCommand(Socket clientsocket, jsonData) {
       clientsocket.write("不认识:command $command");
   }
 }
-
-
