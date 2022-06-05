@@ -1,34 +1,56 @@
-// ignore_for_file: avoid_print
-
 import 'dart:io';
 import 'dart:convert';
-import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 
-late ServerSocket mysocket;
-late SerialPort myport;
-bool isContinueSendSteam = false; //是否可以发送Steam
+import 'socket_data.dart';
 
-Future<void> socketBind(String ip, int port) async {
-  print('Socket绑定IP $ip : $port');
-  mysocket = await ServerSocket.bind(ip, port);
+late Socket mysocket;
+ClientSocket myclient = ClientSocket();
 
-  mysocket.listen((socket) {
-    var tmpData = "";
-    print('连接socket');
-    socket.cast<List<int>>().transform(utf8.decoder).listen((s) {
-      tmpData = doParseResultJson(socket, tmpData, s);
-      print(s);
-      // socket.write("test");
-    });
-  });
+class ClientSocket {
+  Future<void> connect(String ip, int port) async {
+    try {
+      mysocket = await Socket.connect(ip, port);
+      mysocket.cast<List<int>>().transform(utf8.decoder).listen((s) async {
+        var tmpData = "";
+        tmpData = doParseResultJson(mysocket, tmpData, s);
+        print(s);
+      });
+
+      // sendMessage('{"func":"scan"}');
+    } catch (e) {
+      print("连接socket出现异常,e=${e.toString()}");
+    }
+  }
+
+  static void sendMessage(String message) {
+    mysocket.write(message);
+  }
+
+  static void scanPorts() {
+    // 扫描串口
+    var jsonData = '{"func":"scan"}';
+    sendMessage(jsonData);
+  }
+
+  static void sendData(SerialPortData myport, String data) {
+    var jsonData =
+        '{"func":"send","com":{"name":"${myport.name}"},"data":"$data"}';
+    sendMessage(jsonData);
+  }
+
+  static void connectPorts(SerialPortData myport) {
+    var jsonData = '{"func":"connect","com":{"name":"${myport.name}"}}';
+    sendMessage(jsonData);
+  }
+
+  static void disconnectPorts(SerialPortData myport) {
+    var jsonData = '{"func":"disconnect","com":{"name":"${myport.name}"}}';
+    sendMessage(jsonData);
+  }
 }
 
-/// 按JSON格式进行解析收到的结果，无论是否粘包，都是可进行解析
-/// sData：为已经收到的临时数据
-/// s：为当前收到的数据
-/// 返回结果为未处理的所有数据。
-//接收串口数据超过一个字节会出错
 String doParseResultJson(Socket socket, String sData, String s) {
   var tmpData = sData + s;
 
@@ -103,72 +125,20 @@ void log(Socket socket, logdata) {
           logdata);
 }
 
-void doCommand(Socket clientsocket, jsonData) {
+void doCommand(Socket mysocket, jsonData) {
   var command = jsonData['func'].toString().toUpperCase();
   switch (command) {
-    case "SCAN": //扫描端口
+    case "send":
       {
-        var comJsonTotal = '';
-        var comNum = 0;
-        
-        for (final name in SerialPort.availablePorts) {
-          comNum += 1;
-          final sp = SerialPort(name);
-          var comJson = '{';
-          comJson += '"name":"$name",';
-          comJson += '"mess":"${sp.description}"},';
-          // print('\tDescription: ${sp.description}');
-          comJsonTotal += comJson;
-          sp.dispose();
-        }
-        clientsocket.write('{"func":"scan","comNum":$comNum,"com":[$comJsonTotal]}');
+        print("收到串口数据${jsonData['data']}");
       }
       break;
-    case "CONNECT":
-      {
-        var name = jsonData["com"]["name"].toString();
-        myport = SerialPort(name);
-        var baudRate = jsonData["com"]["baud"]??"115200";
-        myport.config.baudRate = int.parse(baudRate.toString());
-        var stopBit = jsonData["com"]["stopBit"]??"1";
-        myport.config.stopBits = int.parse(stopBit.toString());
-        var parity = jsonData["com"]["parity"]??"0";
-        myport.config.parity = int.parse(parity.toString());
-        if (!myport.openReadWrite()) {
-          print(SerialPort.lastError);
-          clientsocket.write(
-              '{"func":"connect","name":"$name","status":"false"}');
-        }
-        clientsocket
-            .write('{"func":"connect","name":"$name","status":"true"}');
-        final reader = SerialPortReader(myport);
-
-        reader.stream.listen((data) {
-          try {
-            final String str = String.fromCharCodes(data);
-            clientsocket
-                .write('{"func":"send","name":"$name","data":"$str"}');
-            print('port received: $str');
-          } catch (e) {
-            print("error: $data");
-          }
-        });
-      }
-      break;
-    case "SEND":
-      {
-        // var name = jsonData["name"].toString();
-        var comData = jsonData["data"].toString();
-        print(comData);
-        myport.write(Uint8List.fromList(comData.codeUnits));
-      }
-      break;
-    case "DISCONNECT":
-      {
-        myport.dispose();
-      }
-      break;
-    default:
-      clientsocket.write("不认识:command $command");
+    // default:
+    //   print("不认识:command $command");
   }
+}
+
+// 虚空回调，有问题，暂时未完善
+void receivedCallBack(VoidCallback stateSetter, String data) {
+  stateSetter();
 }
