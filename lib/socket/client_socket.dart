@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'socket_data.dart';
+import 'socket_event.dart';
 
 late Socket mysocket;
 ClientSocket myclient = ClientSocket();
@@ -45,7 +47,8 @@ class ClientSocket {
   }
 
   static void disconnectPorts(SerialPortData myport) {
-    var jsonData = '{"func":"disconnect","com":{"name":"${myport.name}"}}';
+    // var jsonData = '{"func":"disconnect","com":{"name":"${myport.name}"}}';
+    var jsonData = '{"func":"disconnect"}';
     sendMessage(jsonData);
   }
 }
@@ -134,6 +137,7 @@ void doCommand(Socket mysocket, jsonData) {
       break;
     case "SCAN":
       {
+        myportdataList = [];
         for (var i = 0; i < jsonData['com'].length; i++) {
           myportdataList.add(SerialPortData(
             name: jsonData['com'][i]['name'],
@@ -145,15 +149,10 @@ void doCommand(Socket mysocket, jsonData) {
             status: false,
           ));
         }
-        myportReflash = true;
+        SocketEvent.event.fire(ScanFlush());
       }
       break;
     // default:
     //   print("不认识:command $command");
   }
-}
-
-// 虚空回调，有问题，暂时未完善
-void receivedCallBack(VoidCallback stateSetter, String data) {
-  stateSetter();
 }

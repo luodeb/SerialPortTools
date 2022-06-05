@@ -122,7 +122,9 @@ class _COMPageState extends State<COMPage> {
               ClientSocket.disconnectPorts(myportdataList[pageIndex]);
             }
           }),
-          content: myportdataList[pageIndex].status ? const Text("On") : const Text("Off"),
+          content: myportdataList[pageIndex].status
+              ? const Text("On")
+              : const Text("Off"),
         ),
       ),
       content: Column(
@@ -141,31 +143,38 @@ class _COMPageState extends State<COMPage> {
                   spacerW,
                   DropDownButton(
                     disabled: myportdataList[pageIndex].status,
-                    title: Text("${myportdataList[pageIndex].baud}"), //TODO 返回选取值
-                    items: getPortViewList(SerialPortData.baudList,"baud"),
+                    title:
+                        Text("${myportdataList[pageIndex].baud}"), //TODO 返回选取值
+                    items: getPortViewList(SerialPortData.baudList, "baud"),
                   ),
                   spacerWL,
                   const Text("数字位"),
                   spacerW,
                   DropDownButton(
                     disabled: myportdataList[pageIndex].status,
-                    title: Text("${myportdataList[pageIndex].stopBit}"), //TODO 返回选取值
-                    items: getPortViewList(SerialPortData.stopBitList,"stopBit"),
+                    title: Text(
+                        "${myportdataList[pageIndex].stopBit}"), //TODO 返回选取值
+                    items:
+                        getPortViewList(SerialPortData.stopBitList, "stopBit"),
                   ),
                   spacerWL,
                   const Text("校验位"),
                   spacerW,
                   DropDownButton(
                     disabled: myportdataList[pageIndex].status,
-                    title: Text("${myportdataList[pageIndex].check}"), //TODO 返回选取值
-                    items: getPortViewList(SerialPortData.checkList,"check"),                  ),
+                    title:
+                        Text("${myportdataList[pageIndex].check}"), //TODO 返回选取值
+                    items: getPortViewList(SerialPortData.checkList, "check"),
+                  ),
                   spacerWL,
                   const Text("奇偶位"),
                   spacerW,
                   DropDownButton(
                     disabled: myportdataList[pageIndex].status,
-                    title: Text("${myportdataList[pageIndex].parity}"), //TODO 返回选取值
-                    items: getPortViewList(SerialPortData.parityList,"parity"),                  ),
+                    title: Text(
+                        "${myportdataList[pageIndex].parity}"), //TODO 返回选取值
+                    items: getPortViewList(SerialPortData.parityList, "parity"),
+                  ),
                   spacerWL,
                   RadioButton(
                     checked: valueOfHEXBtn,
@@ -266,5 +275,30 @@ class _COMPageState extends State<COMPage> {
   // 怎么解决接收数据的问题
   void receivedData(String data) {
     print(data);
+  }
+}
+
+class NonePage extends StatefulWidget {
+  const NonePage({Key? key}) : super(key: key);
+
+  @override
+  State createState() {
+    return _NonePageState();
+  }
+}
+
+class _NonePageState extends State<NonePage> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const ScaffoldPage(
+      header: PageHeader(
+        title: Text("未检测到串口"),
+        ),
+      );
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:event_bus/event_bus.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../socket/socket_data.dart';
 import 'COMData.dart';
 
 const Widget spacerH = SizedBox(height: 5.0);
@@ -161,7 +163,7 @@ class _COMState extends State<COM> {
       });
     } else {
       dataDisplayAreaController.text +=
-          "Please open the serial port and try again.\n";
+          "Please open the serial port and try again666.\n";
     }
   }
 

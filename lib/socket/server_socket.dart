@@ -172,7 +172,7 @@ void doCommand(Socket clientsocket, jsonData) {
       break;
     case "DISCONNECT":
       {
-        myport.close();
+        // myport.close();
         myport.dispose();
       }
       break;

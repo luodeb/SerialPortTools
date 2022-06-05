@@ -1,3 +1,4 @@
+
 class SerialPortData {
   SerialPortData({
     this.name = "",
@@ -36,4 +37,3 @@ class SerialPortData {
 }
 
 List<SerialPortData> myportdataList = [];
-bool myportReflash=false;
