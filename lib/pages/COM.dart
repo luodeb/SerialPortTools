@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:event_bus/event_bus.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../socket/socket_data.dart';
 import 'COMData.dart';
 
 const Widget spacerH = SizedBox(height: 5.0);
@@ -33,6 +35,8 @@ class _COMState extends State<COM> {
   @override
   void dispose() {
     super.dispose();
+    sendDataAreaController.dispose();
+    dataDisplayAreaController.dispose();
   }
 
   String _doParseResultJson(Socket socket, String tmpData, COMData comData) {

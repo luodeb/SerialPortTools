@@ -114,13 +114,21 @@ void doCommand(Socket clientsocket, jsonData) {
         for (final name in SerialPort.availablePorts) {
           comNum += 1;
           final sp = SerialPort(name);
-          var comJson = '{';
+          var comJson = '';
+          if (comNum != 1) {
+            comJson += ',{';
+          } else {
+            comJson += '{';
+          }
           comJson += '"name":"$name",';
-          comJson += '"mess":"${sp.description}"},';
-          // print('\tDescription: ${sp.description}');
+          comJson += '"mess":"${sp.description}"}';
           comJsonTotal += comJson;
           sp.dispose();
         }
+        log(
+          clientsocket,
+          '{"func":"scan","comNum":$comNum,"com":[$comJsonTotal]}'
+        );
         clientsocket
             .write('{"func":"scan","comNum":$comNum,"com":[$comJsonTotal]}');
       }
@@ -164,7 +172,7 @@ void doCommand(Socket clientsocket, jsonData) {
       break;
     case "DISCONNECT":
       {
-        myport.close();
+        // myport.close();
         myport.dispose();
       }
       break;

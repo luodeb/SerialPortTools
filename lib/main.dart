@@ -2,6 +2,8 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:provider/provider.dart';
+import 'package:serial_port_tools/pages/com_page.dart';
+import 'package:serial_port_tools/socket/socket_data.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:window_manager/window_manager.dart';
@@ -10,6 +12,7 @@ import 'pages/COM.dart';
 import 'pages/COMData.dart';
 import 'pages/settings.dart';
 import 'socket/client_socket.dart';
+import 'socket/socket_event.dart';
 import 'theme.dart';
 
 import 'socket/server_socket.dart';
@@ -127,20 +130,12 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   bool value = false;
 
   int index = 0;
-  int comNum = 10;
 
-  final List<Widget> _paneContext = [];
-  final List<NavigationPaneItem> _paneItem = [];
+  List<Widget> _paneContext = [];
+  List<NavigationPaneItem> _paneItem = [];
 
   _MyHomePageState() {
-    for (int i = 0; i < comNum; i++) {
-      _paneContext.add(COM(i));
-      _paneItem.add(PaneItem(
-        icon: const Icon(FluentIcons.devices3),
-        title: Text('COM${i + 1}'),
-      ));
-    }
-    _paneContext.add(Settings(controller: settingsController));
+    reflashPortWinItem();
   }
 
   final settingsController = ScrollController();
@@ -150,6 +145,11 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   void initState() {
     windowManager.addListener(this);
     super.initState();
+    SocketEvent.event.on<ScanFlush>().listen((event) {
+      // 监听事件
+      reflashPortWinItem();
+      setState(() => {});
+    });
   }
 
   @override
@@ -157,77 +157,84 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     windowManager.removeListener(this);
     settingsController.dispose();
     super.dispose();
+    SocketEvent.event.destroy(); // 取消监听
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (_) => COMData(comNum),
-        builder: (context, _) {
-          final appTheme = context.watch<AppTheme>();
-          return NavigationView(
-            key: viewKey,
-            appBar: NavigationAppBar(
-              automaticallyImplyLeading: false,
-              title: () {
-                if (kIsWeb) return const Text(appTitle);
-                return const DragToMoveArea(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      appTitle,
-                      textScaleFactor: 1.5,
-                    ),
-                  ),
-                );
-              }(),
-              actions: kIsWeb
-                  ? null
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [Spacer(), WindowButtons()],
-                    ),
-            ),
-            pane: NavigationPane(
-              selected: index,
-              onChanged: (i) => setState(() => index = i),
-              size: const NavigationPaneSize(
-                //openMinWidth: 150,
-                //openMaxWidth: 220,
-                openWidth: 200,
+    final appTheme = context.watch<AppTheme>();
+    return NavigationView(
+      key: viewKey,
+      appBar: NavigationAppBar(
+        automaticallyImplyLeading: false,
+        title: () {
+          if (kIsWeb) return const Text(appTitle);
+          return const DragToMoveArea(
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                appTitle,
+                textScaleFactor: 1.5,
               ),
-              header: Container(
-                height: kOneLineTileHeight,
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  "串口列表",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  textScaleFactor: 1.2,
-                ),
-              ),
-              displayMode: appTheme.displayMode,
-              indicator: () {
-                switch (appTheme.indicator) {
-                  case NavigationIndicators.end:
-                    return const EndNavigationIndicator();
-                  case NavigationIndicators.sticky:
-                  default:
-                    return const StickyNavigationIndicator();
-                }
-              }(),
-              items: _paneItem,
-              footerItems: [
-                PaneItemSeparator(),
-                PaneItem(
-                  icon: const Icon(FluentIcons.settings),
-                  title: const Text('Settings'),
-                ),
-              ],
             ),
-            content: NavigationBody(index: index, children: _paneContext),
           );
-        });
+        }(),
+        actions: kIsWeb
+            ? null
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [Spacer(), WindowButtons()],
+              ),
+      ),
+      pane: NavigationPane(
+        selected: index,
+        onChanged: (i) => setState(() => index = i),
+        size: const NavigationPaneSize(
+          //openMinWidth: 150,
+          //openMaxWidth: 220,
+          openWidth: 200,
+        ),
+        header: Container(
+          height: kOneLineTileHeight,
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          alignment: Alignment.centerLeft,
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text(
+              "串口列表",
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textScaleFactor: 1.2,
+            ),
+            IconButton(
+              icon: const Icon(FluentIcons.update_restore),
+              onPressed: () {
+                myclient.scanPorts();
+                // print('pressed icon button');
+              },
+            ),
+          ]),
+        ),
+        displayMode: appTheme.displayMode,
+        indicator: () {
+          switch (appTheme.indicator) {
+            case NavigationIndicators.end:
+              return const EndNavigationIndicator();
+            case NavigationIndicators.sticky:
+            default:
+              return const StickyNavigationIndicator();
+          }
+        }(),
+        items: _paneItem,
+        footerItems: [
+          PaneItemSeparator(),
+          PaneItem(
+            icon: const Icon(FluentIcons.settings),
+            title: const Text('Settings'),
+          ),
+        ],
+      ),
+      content: NavigationBody(index: index, children: _paneContext),
+    );
   }
 
   @override
@@ -259,6 +266,28 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         },
       );
     }
+  }
+
+  // 刷新页面
+  void reflashPortWinItem() {
+    _paneContext = [];
+    _paneItem = [];
+    if (myportdataList.isNotEmpty) {
+      for (int i = 0; i < myportdataList.length; i++) {
+        _paneContext.add(COMPage(i));
+        _paneItem.add(PaneItem(
+          icon: const Icon(FluentIcons.devices3),
+          title: Text(myportdataList[i].name),
+        ));
+      }
+    } else {
+      _paneContext.add(const NonePage());
+      _paneItem.add(PaneItem(
+        icon: const Icon(FluentIcons.hide),
+        title: const Text('无串口'),
+      ));
+    }
+    _paneContext.add(Settings(controller: settingsController));
   }
 }
 
