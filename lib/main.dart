@@ -6,15 +6,6 @@ import 'package:system_theme/system_theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'pages/COM_1.dart';
-import 'pages/COM_2.dart';
-import 'pages/COM_3.dart';
-import 'pages/COM_4.dart';
-import 'pages/COM_5.dart';
-import 'pages/COM_6.dart';
-import 'pages/COM_7.dart';
-import 'pages/COM_8.dart';
-import 'pages/COM_9.dart';
 import 'pages/comPage.dart';
 import 'pages/settings.dart';
 import 'socket/client_socket.dart';
@@ -279,15 +270,15 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         ],
       ),
       content: NavigationBody(index: index, children: [
-        const COM1(),
-        const COM2(),
-        const COM3(),
-        const COM4(),
-        const COM5(),
-        const COM6(),
-        const COM7(),
-        const COM8(),
-        const COM9(),
+        const COMPage(1), // COM10
+        const COMPage(2), // COM10
+        const COMPage(3), // COM10
+        const COMPage(4), // COM10
+        const COMPage(5), // COM10
+        const COMPage(6), // COM10
+        const COMPage(7), // COM10
+        const COMPage(8), // COM10
+        const COMPage(9), // COM10
         const COMPage(10), // COM10
         Settings(controller: settingsController),
       ]),
