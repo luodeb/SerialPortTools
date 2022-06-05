@@ -29,7 +29,7 @@ class _COMState extends State<COM> {
 
   final sendDataAreaController = TextEditingController();
   final dataDisplayAreaController = TextEditingController();
-
+  bool timeStamp_display_disabled = true;
   @override
   void dispose() {
     super.dispose();
@@ -114,20 +114,29 @@ class _COMState extends State<COM> {
           var status = jsonData["status"].toString();
           if (status == "true") {
             setState(() => comData.isOn[i] = true);
-            dataDisplayAreaController.text += "$name connection succeeded.\n";
-          }
+             dataDisplayAreaController.text += "$name connection succeeded.\n";
+           
           if (status == "false") {
             setState(() => comData.isOn[i] = false);
             dataDisplayAreaController.text += "$name connection failed.\n";
           }
+        }
         }
         break;
       case "SEND":
         {
           var name = jsonData["name"].toString();
           var data = jsonData["data"].toString();
-          dataDisplayAreaController.text +=
-              "$name receives $data successfully.\n";
+          if(timeStamp_display_disabled)
+          {
+            dataDisplayAreaController.text +=
+                        "$name receives $data successfully.\n";
+          }
+          else//时间戳使能，则显示时间戳
+          {
+             dataDisplayAreaController.text +=
+                        "${DateTime.now()}:  $name receives $data successfully.\n";
+          }
         }
     }
   }
@@ -154,9 +163,22 @@ class _COMState extends State<COM> {
   void _sendPressed(COMData comData) {
     if (comData.isOn[i] == true) {
       Socket.connect('127.0.0.1', 4041).then((socket) async {
-        socket.write('{"func":"send","data":"${sendDataAreaController.text}"}');
-        dataDisplayAreaController.text +=
-            "COM${i + 1} sent ${sendDataAreaController.text} successfully.\n";
+        if(sendDataAreaController.text.toString()!='')//避免发送区无数据而空发送得情况
+        {
+          socket.write('{"func":"send","data":"${sendDataAreaController.text}"}');
+            if(timeStamp_display_disabled)
+          {
+            dataDisplayAreaController.text +=
+                        "COM${i + 1} sent ${sendDataAreaController.text} successfully.\n";
+          }
+          else 
+          {
+            
+            dataDisplayAreaController.text +=
+                        "${DateTime.now()}:  COM${i + 1} sent ${sendDataAreaController.text} successfully.\n";
+          }
+        }  
+        
         sendDataAreaController.text = "";
       });
     } else {
@@ -373,12 +395,19 @@ class _COMState extends State<COM> {
                     builder: (context, mode, w) => Tooltip(
                       message: "点击显示时间戳",
                       child: w,
+                      
                     ),
                     wrappedItem: CommandBarButton(
                       icon: const Icon(FluentIcons.date_time),
-                      label: const Text('时间戳'),
-                      onPressed: () {},
+                      
+                      onPressed: () {
+                       setState(() {
+                         timeStamp_display_disabled = !timeStamp_display_disabled;
+                       });  
+                      },
+                      label: timeStamp_display_disabled?const Text('时间戳'):const Text('时间戳显示已开启'),
                     ),
+                   
                   ),
                   CommandBarBuilderItem(
                     builder: (context, mode, w) => Tooltip(
