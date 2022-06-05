@@ -6,7 +6,8 @@ import 'package:system_theme/system_theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'pages/comPage.dart';
+import 'pages/COM.dart';
+import 'pages/COMData.dart';
 import 'pages/settings.dart';
 import 'socket/client_socket.dart';
 import 'theme.dart';
@@ -126,6 +127,21 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   bool value = false;
 
   int index = 0;
+  int comNum = 10;
+
+  final List<Widget> _paneContext = [];
+  final List<NavigationPaneItem> _paneItem = [];
+
+  _MyHomePageState() {
+    for (int i = 0; i < comNum; i++) {
+      _paneContext.add(COM(i));
+      _paneItem.add(PaneItem(
+        icon: const Icon(FluentIcons.devices3),
+        title: Text('COM${i + 1}'),
+      ));
+    }
+    _paneContext.add(Settings(controller: settingsController));
+  }
 
   final settingsController = ScrollController();
   final viewKey = GlobalKey();
@@ -145,144 +161,73 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    final appTheme = context.watch<AppTheme>();
-    return NavigationView(
-      key: viewKey,
-      appBar: NavigationAppBar(
-        automaticallyImplyLeading: false,
-        title: () {
-          if (kIsWeb) return const Text(appTitle);
-          return const DragToMoveArea(
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                appTitle,
-                textScaleFactor: 1.5,
-              ),
+    return ChangeNotifierProvider(
+        create: (_) => COMData(comNum),
+        builder: (context, _) {
+          final appTheme = context.watch<AppTheme>();
+          return NavigationView(
+            key: viewKey,
+            appBar: NavigationAppBar(
+              automaticallyImplyLeading: false,
+              title: () {
+                if (kIsWeb) return const Text(appTitle);
+                return const DragToMoveArea(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      appTitle,
+                      textScaleFactor: 1.5,
+                    ),
+                  ),
+                );
+              }(),
+              actions: kIsWeb
+                  ? null
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [Spacer(), WindowButtons()],
+                    ),
             ),
+            pane: NavigationPane(
+              selected: index,
+              onChanged: (i) => setState(() => index = i),
+              size: const NavigationPaneSize(
+                //openMinWidth: 150,
+                //openMaxWidth: 220,
+                openWidth: 200,
+              ),
+              header: Container(
+                height: kOneLineTileHeight,
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "串口列表",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  textScaleFactor: 1.2,
+                ),
+              ),
+              displayMode: appTheme.displayMode,
+              indicator: () {
+                switch (appTheme.indicator) {
+                  case NavigationIndicators.end:
+                    return const EndNavigationIndicator();
+                  case NavigationIndicators.sticky:
+                  default:
+                    return const StickyNavigationIndicator();
+                }
+              }(),
+              items: _paneItem,
+              footerItems: [
+                PaneItemSeparator(),
+                PaneItem(
+                  icon: const Icon(FluentIcons.settings),
+                  title: const Text('Settings'),
+                ),
+              ],
+            ),
+            content: NavigationBody(index: index, children: _paneContext),
           );
-        }(),
-        actions: kIsWeb
-            ? null
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [Spacer(), WindowButtons()],
-              ),
-      ),
-      pane: NavigationPane(
-        selected: index,
-        onChanged: (i) => setState(() => index = i),
-        size: const NavigationPaneSize(
-          //openMinWidth: 150,
-          //openMaxWidth: 220,
-          openWidth: 200,
-        ),
-        header: Container(
-          height: kOneLineTileHeight,
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          alignment: Alignment.centerLeft,
-          child: const Text(
-            "串口列表",
-            style: TextStyle(fontWeight: FontWeight.bold),
-            textScaleFactor: 1.2,
-          ),
-          /*
-          FlutterLogo(
-            style: appTheme.displayMode == PaneDisplayMode.top
-                ? FlutterLogoStyle.markOnly
-                : FlutterLogoStyle.horizontal,
-            size: appTheme.displayMode == PaneDisplayMode.top ? 24 : 100.0,
-          ),
-          */
-        ),
-        displayMode: appTheme.displayMode,
-        indicator: () {
-          switch (appTheme.indicator) {
-            case NavigationIndicators.end:
-              return const EndNavigationIndicator();
-            case NavigationIndicators.sticky:
-            default:
-              return const StickyNavigationIndicator();
-          }
-        }(),
-        items: [
-          // It doesn't look good when resizing from compact to open
-          // PaneItemHeader(header: Text('User Interaction')),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM1'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM2'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM3'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM4'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM5'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM6'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM7'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('COM8'),
-          ),
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            /*
-            icon: Icon(
-              appTheme.displayMode == PaneDisplayMode.top
-                  ? FluentIcons.more
-                  : FluentIcons.more_vertical,
-            ),
-            */
-            title: const Text('COM9'),
-            /*
-            infoBadge: const InfoBadge(
-              source: Text('9'),
-            ),
-            */
-          ),          
-          PaneItem(
-            icon: const Icon(FluentIcons.devices3),
-            title: const Text('自定义'),
-          ),
-        ],
-        footerItems: [
-          PaneItemSeparator(),
-          PaneItem(
-            icon: const Icon(FluentIcons.settings),
-            title: const Text('Settings'),
-          ),
-        ],
-      ),
-      content: NavigationBody(index: index, children: [
-        const COMPage(1), // COM10
-        const COMPage(2), // COM10
-        const COMPage(3), // COM10
-        const COMPage(4), // COM10
-        const COMPage(5), // COM10
-        const COMPage(6), // COM10
-        const COMPage(7), // COM10
-        const COMPage(8), // COM10
-        const COMPage(9), // COM10
-        const COMPage(10), // COM10
-        Settings(controller: settingsController),
-      ]),
-    );
+        });
   }
 
   @override
