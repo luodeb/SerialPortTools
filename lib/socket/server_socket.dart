@@ -110,7 +110,7 @@ void doCommand(Socket clientsocket, jsonData) {
       {
         var comJsonTotal = '';
         var comNum = 0;
-        
+
         for (final name in SerialPort.availablePorts) {
           comNum += 1;
           final sp = SerialPort(name);
@@ -121,33 +121,32 @@ void doCommand(Socket clientsocket, jsonData) {
           comJsonTotal += comJson;
           sp.dispose();
         }
-        clientsocket.write('{"func":"scan","comNum":$comNum,"com":[$comJsonTotal]}');
+        clientsocket
+            .write('{"func":"scan","comNum":$comNum,"com":[$comJsonTotal]}');
       }
       break;
     case "CONNECT":
       {
         var name = jsonData["com"]["name"].toString();
         myport = SerialPort(name);
-        var baudRate = jsonData["com"]["baud"]??"115200";
+        var baudRate = jsonData["com"]["baud"] ?? "115200";
         myport.config.baudRate = int.parse(baudRate.toString());
-        var stopBit = jsonData["com"]["stopBit"]??"1";
+        var stopBit = jsonData["com"]["stopBit"] ?? "1";
         myport.config.stopBits = int.parse(stopBit.toString());
-        var parity = jsonData["com"]["parity"]??"0";
+        var parity = jsonData["com"]["parity"] ?? "0";
         myport.config.parity = int.parse(parity.toString());
         if (!myport.openReadWrite()) {
           print(SerialPort.lastError);
-          clientsocket.write(
-              '{"func":"connect","name":"$name","status":"false"}');
+          clientsocket
+              .write('{"func":"connect","name":"$name","status":"false"}');
         }
-        clientsocket
-            .write('{"func":"connect","name":"$name","status":"true"}');
+        clientsocket.write('{"func":"connect","name":"$name","status":"true"}');
         final reader = SerialPortReader(myport);
 
         reader.stream.listen((data) {
           try {
             final String str = String.fromCharCodes(data);
-            clientsocket
-                .write('{"func":"send","name":"$name","data":"$str"}');
+            clientsocket.write('{"func":"send","name":"$name","data":"$str"}');
             print('port received: $str');
           } catch (e) {
             print("error: $data");
@@ -165,6 +164,7 @@ void doCommand(Socket clientsocket, jsonData) {
       break;
     case "DISCONNECT":
       {
+        myport.close();
         myport.dispose();
       }
       break;
