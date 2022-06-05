@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import '../socket/client_socket.dart';
 import '../socket/socket_data.dart';
+import '../socket/socket_event.dart';
 
 const Widget spacerH = SizedBox(height: 5.0);
 const Widget spacerW = SizedBox(width: 5.0);
@@ -25,7 +26,11 @@ class _COMPageState extends State<COMPage> {
 
   bool valueOfHEXBtn = false;
   bool valueOfTextBtn = false;
+  bool timeStampDisplay = false;
   String sendBuffer = "";
+
+  final sendDataAreaController = TextEditingController(); // 发送数据
+  final dataDisplayAreaController = TextEditingController(); // 接收数据
 
   List<CommandBarItem> _commandBarItems() {
     final commandBarItems = <CommandBarItem>[
@@ -36,8 +41,12 @@ class _COMPageState extends State<COMPage> {
         ),
         wrappedItem: CommandBarButton(
           icon: const Icon(FluentIcons.date_time),
-          label: const Text('时间戳'),
-          onPressed: () {},
+          label: timeStampDisplay ? const Text('时间戳显示已开启') : const Text('时间戳'),
+          onPressed: () {
+            setState(() {
+              timeStampDisplay = !timeStampDisplay;
+            });
+          },
         ),
       ),
       CommandBarBuilderItem(
@@ -100,6 +109,21 @@ class _COMPageState extends State<COMPage> {
     ];
 
     return commandBarItems;
+  }
+
+  @override
+  void initState() {
+    //
+    super.initState();
+    SocketEvent.event.on<MessageEvent>().listen((event) {
+      print(event.data);
+      if (!timeStampDisplay) {
+        dataDisplayAreaController.text += "${event.data}\n";
+      } else {
+        dataDisplayAreaController.text +=
+            "[${DateTime.now()}]: ${event.data}\n";
+      }
+    });
   }
 
   @override
@@ -198,6 +222,7 @@ class _COMPageState extends State<COMPage> {
           spacerHL,
           Expanded(
             child: TextFormBox(
+              controller: dataDisplayAreaController,
               maxLines: null,
               suffixMode: OverlayVisibilityMode.always,
               minHeight: double.infinity,
@@ -208,6 +233,7 @@ class _COMPageState extends State<COMPage> {
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 100),
             child: TextFormBox(
+              controller: sendDataAreaController,
               maxLines: null,
               suffixMode: OverlayVisibilityMode.always,
               minHeight: 100,
@@ -271,11 +297,6 @@ class _COMPageState extends State<COMPage> {
   void sendComData() {
     ClientSocket.sendData(myportdataList[pageIndex], sendBuffer);
   }
-
-  // 怎么解决接收数据的问题
-  void receivedData(String data) {
-    print(data);
-  }
 }
 
 class NonePage extends StatefulWidget {
@@ -298,7 +319,7 @@ class _NonePageState extends State<NonePage> {
     return const ScaffoldPage(
       header: PageHeader(
         title: Text("未检测到串口"),
-        ),
-      );
+      ),
+    );
   }
 }

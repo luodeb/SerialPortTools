@@ -35,6 +35,8 @@ class _COMState extends State<COM> {
   @override
   void dispose() {
     super.dispose();
+    sendDataAreaController.dispose();
+    dataDisplayAreaController.dispose();
   }
 
   String _doParseResultJson(Socket socket, String tmpData, COMData comData) {
@@ -163,7 +165,7 @@ class _COMState extends State<COM> {
       });
     } else {
       dataDisplayAreaController.text +=
-          "Please open the serial port and try again666.\n";
+          "Please open the serial port and try again.\n";
     }
   }
 

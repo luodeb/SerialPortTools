@@ -9,3 +9,8 @@ class ScanFlush {
   // String Data;
   // ScanFlush(this.Data);
 }
+
+class MessageEvent {
+  String data;
+  MessageEvent(this.data);
+}

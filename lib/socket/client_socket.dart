@@ -130,8 +130,9 @@ void log(Socket socket, logdata) {
 void doCommand(Socket mysocket, jsonData) {
   var command = jsonData['func'].toString().toUpperCase();
   switch (command) {
-    case "send":
+    case "SEND":
       {
+        SocketEvent.event.fire(MessageEvent(jsonData['data']));
         print("收到串口数据${jsonData['data']}");
       }
       break;

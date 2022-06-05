@@ -7,7 +7,6 @@ import 'package:serial_port_tools/socket/socket_data.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:event_bus/event_bus.dart';
 
 import 'pages/COM.dart';
 import 'pages/COMData.dart';
@@ -136,12 +135,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   List<NavigationPaneItem> _paneItem = [];
 
   _MyHomePageState() {
-    _paneContext.add(const NonePage());
-    _paneItem.add(PaneItem(
-      icon: const Icon(FluentIcons.hide),
-      title: const Text('无串口'),
-    ));
-    _paneContext.add(Settings(controller: settingsController));
+    reflashPortWinItem();
   }
 
   final settingsController = ScrollController();
@@ -153,15 +147,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     super.initState();
     SocketEvent.event.on<ScanFlush>().listen((event) {
       // 监听事件
-      _paneContext = [];
-      _paneItem = [];
-      for (int i = 0; i < myportdataList.length; i++) {
-        _paneContext.add(COMPage(i));
-        _paneItem.add(PaneItem(
-          icon: const Icon(FluentIcons.devices3),
-          title: Text(myportdataList[i].name),
-        ));
-      }
+      reflashPortWinItem();
       setState(() => {});
     });
   }
@@ -212,11 +198,21 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
           height: kOneLineTileHeight,
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           alignment: Alignment.centerLeft,
-          child: const Text(
-            "串口列表",
-            style: TextStyle(fontWeight: FontWeight.bold),
-            textScaleFactor: 1.2,
-          ),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text(
+              "串口列表",
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textScaleFactor: 1.2,
+            ),
+            IconButton(
+              icon: const Icon(FluentIcons.update_restore),
+              onPressed: () {
+                myclient.scanPorts();
+                // print('pressed icon button');
+              },
+            ),
+          ]),
         ),
         displayMode: appTheme.displayMode,
         indicator: () {
@@ -270,6 +266,28 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         },
       );
     }
+  }
+
+  // 刷新页面
+  void reflashPortWinItem() {
+    _paneContext = [];
+    _paneItem = [];
+    if (myportdataList.isNotEmpty) {
+      for (int i = 0; i < myportdataList.length; i++) {
+        _paneContext.add(COMPage(i));
+        _paneItem.add(PaneItem(
+          icon: const Icon(FluentIcons.devices3),
+          title: Text(myportdataList[i].name),
+        ));
+      }
+    } else {
+      _paneContext.add(const NonePage());
+      _paneItem.add(PaneItem(
+        icon: const Icon(FluentIcons.hide),
+        title: const Text('无串口'),
+      ));
+    }
+    _paneContext.add(Settings(controller: settingsController));
   }
 }
 
