@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-
 import 'socket_data.dart';
 
 late Socket mysocket;
@@ -18,7 +17,7 @@ class ClientSocket {
         print(s);
       });
 
-      // sendMessage('{"func":"scan"}');
+      sendMessage('{"func":"scan"}');
     } catch (e) {
       print("连接socket出现异常,e=${e.toString()}");
     }
@@ -28,7 +27,7 @@ class ClientSocket {
     mysocket.write(message);
   }
 
-  static void scanPorts() {
+  void scanPorts() {
     // 扫描串口
     var jsonData = '{"func":"scan"}';
     sendMessage(jsonData);
@@ -131,6 +130,22 @@ void doCommand(Socket mysocket, jsonData) {
     case "send":
       {
         print("收到串口数据${jsonData['data']}");
+      }
+      break;
+    case "SCAN":
+      {
+        for (var i = 0; i < jsonData['com'].length; i++) {
+          myportdataList.add(SerialPortData(
+            name: jsonData['com'][i]['name'],
+            description: jsonData['com'][i]['mess'],
+            baud: 115200,
+            stopBit: 8,
+            parity: 0,
+            check: 0,
+            status: false,
+          ));
+        }
+        myportReflash = true;
       }
       break;
     // default:

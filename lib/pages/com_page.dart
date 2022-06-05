@@ -23,8 +23,6 @@ class _COMPageState extends State<COMPage> {
 
   _COMPageState(this.pageIndex);
 
-  bool disabled = false;
-  SerialPortData myportdata = SerialPortData.serialPortData;
   bool valueOfHEXBtn = false;
   bool valueOfTextBtn = false;
   String sendBuffer = "";
@@ -111,21 +109,20 @@ class _COMPageState extends State<COMPage> {
 
   @override
   Widget build(BuildContext context) {
-    myportdata.name = "COM$pageIndex";
     return ScaffoldPage(
       header: PageHeader(
-        title: Text(myportdata.name),
+        title: Text(myportdataList[pageIndex].name),
         commandBar: ToggleSwitch(
-          checked: disabled,
+          checked: myportdataList[pageIndex].status,
           onChanged: (v) => setState(() {
-            disabled = v;
-            if (disabled) {
-              ClientSocket.connectPorts(myportdata);
+            myportdataList[pageIndex].status = v;
+            if (myportdataList[pageIndex].status) {
+              ClientSocket.connectPorts(myportdataList[pageIndex]);
             } else {
-              ClientSocket.disconnectPorts(myportdata);
+              ClientSocket.disconnectPorts(myportdataList[pageIndex]);
             }
           }),
-          content: disabled ? const Text("On") : const Text("Off"),
+          content: myportdataList[pageIndex].status ? const Text("On") : const Text("Off"),
         ),
       ),
       content: Column(
@@ -143,100 +140,47 @@ class _COMPageState extends State<COMPage> {
                   const Text("波特率"),
                   spacerW,
                   DropDownButton(
-                    disabled: disabled,
-                    title: Text("${myportdata.baud}"), //TODO 返回选取值
-                    items: getBaudViewList(),
+                    disabled: myportdataList[pageIndex].status,
+                    title: Text("${myportdataList[pageIndex].baud}"), //TODO 返回选取值
+                    items: getPortViewList(SerialPortData.baudList,"baud"),
                   ),
                   spacerWL,
                   const Text("数字位"),
                   spacerW,
                   DropDownButton(
-                    disabled: disabled,
-                    title: Text("8"), //TODO 返回选取值
-                    items: [
-                      MenuFlyoutItem(
-                        text: const Text('2'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('8'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('16'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('自定义'),
-                        onPressed: () {},
-                      ),
-                    ],
+                    disabled: myportdataList[pageIndex].status,
+                    title: Text("${myportdataList[pageIndex].stopBit}"), //TODO 返回选取值
+                    items: getPortViewList(SerialPortData.stopBitList,"stopBit"),
                   ),
                   spacerWL,
                   const Text("校验位"),
                   spacerW,
                   DropDownButton(
-                    disabled: disabled,
-                    title: Text("8"), //TODO 返回选取值
-                    items: [
-                      MenuFlyoutItem(
-                        text: const Text('2'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('8'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('16'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('自定义'),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
+                    disabled: myportdataList[pageIndex].status,
+                    title: Text("${myportdataList[pageIndex].check}"), //TODO 返回选取值
+                    items: getPortViewList(SerialPortData.checkList,"check"),                  ),
                   spacerWL,
                   const Text("奇偶位"),
                   spacerW,
                   DropDownButton(
-                    disabled: disabled,
-                    title: Text("8"), //TODO 返回选取值
-                    items: [
-                      MenuFlyoutItem(
-                        text: const Text('2'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('8'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('16'),
-                        onPressed: () {},
-                      ),
-                      MenuFlyoutItem(
-                        text: const Text('自定义'),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
+                    disabled: myportdataList[pageIndex].status,
+                    title: Text("${myportdataList[pageIndex].parity}"), //TODO 返回选取值
+                    items: getPortViewList(SerialPortData.parityList,"parity"),                  ),
                   spacerWL,
                   RadioButton(
                     checked: valueOfHEXBtn,
-                    onChanged: disabled
+                    onChanged: myportdataList[pageIndex].status
                         ? null
                         : (v) => setState(() => valueOfHEXBtn = v),
-                    content: Text("HEX"),
+                    content: const Text("HEX"),
                   ),
                   spacerWL,
                   RadioButton(
                     checked: valueOfTextBtn,
-                    onChanged: disabled
+                    onChanged: myportdataList[pageIndex].status
                         ? null
                         : (v) => setState(() => valueOfTextBtn = v),
-                    content: Text("Text"),
+                    content: const Text("Text"),
                   ),
                 ],
               ),
@@ -281,21 +225,42 @@ class _COMPageState extends State<COMPage> {
   }
 
   // 波特率列表
-  List<MenuFlyoutItem> getBaudViewList() {
-    final List<MenuFlyoutItem> baudListViews = <MenuFlyoutItem>[];
-    for (int i = 0; i < SerialPortData.baudList.length; i++) {
-      baudListViews.add(MenuFlyoutItem(
-          text: Text('${SerialPortData.baudList[i]}'),
+  List<MenuFlyoutItem> getPortViewList(List<int> datalist, String typrName) {
+    final List<MenuFlyoutItem> portListViews = <MenuFlyoutItem>[];
+    for (int i = 0; i < datalist.length; i++) {
+      portListViews.add(MenuFlyoutItem(
+          text: Text('${datalist[i]}'),
           onPressed: () => setState(() {
-                myportdata.baud = SerialPortData.baudList[i];
+                switch (typrName) {
+                  case 'baud':
+                    {
+                      myportdataList[pageIndex].baud = datalist[i];
+                    }
+                    break;
+                  case 'stopBit':
+                    {
+                      myportdataList[pageIndex].stopBit = datalist[i];
+                    }
+                    break;
+                  case 'parity':
+                    {
+                      myportdataList[pageIndex].parity = datalist[i];
+                    }
+                    break;
+                  case 'check':
+                    {
+                      myportdataList[pageIndex].check = datalist[i];
+                    }
+                    break;
+                }
               })));
     }
-    return baudListViews;
+    return portListViews;
   }
 
   // 发送命令行数据
   void sendComData() {
-    ClientSocket.sendData(myportdata, sendBuffer);
+    ClientSocket.sendData(myportdataList[pageIndex], sendBuffer);
   }
 
   // 怎么解决接收数据的问题
@@ -303,5 +268,3 @@ class _COMPageState extends State<COMPage> {
     print(data);
   }
 }
-
-
