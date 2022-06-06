@@ -63,7 +63,7 @@ void main() async {
     socketBind('127.0.0.1', 4041);
   }
 
-  myclient.connect('127.0.0.1', 4049);
+  myclient.connect('127.0.0.1', 4041);
 
   runApp(const MyApp());
   // asyncServerSocket("127.0.0.1",9099);
